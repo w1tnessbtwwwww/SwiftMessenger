@@ -22,7 +22,14 @@ class ChatSelectionController: UITableViewCell {
     var chatId: String? = nil
 
     public func setupCell(chatElement: ChatElement) {
-        self.companionAvatar.kf.setImage(with: URL(string: chatElement.photo))
+        
+        if (chatElement.photo == nil) {
+            
+        }
+        else {
+            self.companionAvatar.kf.setImage(with: URL(string: chatElement.photo!))
+        }
+        
         self.lastMessage.text = chatElement.lastMessage?.message ?? "No last message"
         self.dialogName.text = chatElement.chatName
         self.chatId = chatElement.id

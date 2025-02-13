@@ -10,6 +10,7 @@ class ChatController: UIViewController, UITableViewDelegate, UITableViewDataSour
         case .disconnected(let reason, let code):
             print("Disconnected: \(reason) (\(code))")
         case .text(let text):
+            
             let msg = try? JSONDecoder().decode(Message.self, from: text.data(using: .utf8)!)
             self.chat_info?.messages.append(msg!)
             self.tableView.reloadData()
@@ -23,6 +24,7 @@ class ChatController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     
     func send(message: String) {
+        print(message)
         self.socket?.write(string: message)
         self.textView.text = ""
     }
@@ -77,6 +79,7 @@ class ChatController: UIViewController, UITableViewDelegate, UITableViewDataSour
         setupKeyboardObservers()
         configureTableView()
         
+        
         self.connect(chat_id: self.chat!)
         
         self.sendButton.addTarget(self, action: #selector(handleSend), for: .touchUpInside)
@@ -88,16 +91,29 @@ class ChatController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     // MARK: - Configuration
+    
     func configureChat(chat_id: String) {
+        // Очищаем предыдущие данные
+        self.chat_info = nil
+        self.tableView.reloadData()
+        
+        // Устанавливаем новый chat_id
         self.chat = chat_id
+        
+        // Подключаемся к новому WebSocket
+        self.connect(chat_id: chat_id)
+        
+        // Загружаем историю нового чата
+        self.loadChatHistory()
     }
     
     private func configureTableView() {
         tableView.delegate = self
         tableView.dataSource = self
+        self.tableView.separatorStyle = .none
         tableView.register(UINib(nibName: "CustomMessageCell", bundle: nil),
                          forCellReuseIdentifier: "CustomMessage")
-        tableView.estimatedRowHeight = 80
+        tableView.estimatedRowHeight = 119
         tableView.rowHeight = UITableView.automaticDimension
     }
     
@@ -109,9 +125,7 @@ class ChatController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CustomMessage", for: indexPath) as! CustomMessageCell
         if let message = chat_info?.messages[indexPath.row] {
-            
-            cell.setupCell(message: message, UserDefaultsHelper.shared.id!)
-            
+            cell.setupCell(message: message, UserDefaultsHelper.shared.id!, photoUrl: message.photo ?? "")
         }
         return cell
     }
@@ -131,7 +145,6 @@ class ChatController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // MARK: - Network
     private func loadChatHistory() {
         guard let chatID = chat else { return }
-        
         AF.request(
             "\(APIService.baseUrl)/chats/messages/\(chatID)",
             method: .get,
@@ -140,6 +153,7 @@ class ChatController: UIViewController, UITableViewDelegate, UITableViewDataSour
             switch response.result {
             case .success(let history):
                 self?.chat_info = history
+                print(history)
                 DispatchQueue.main.async {
                     self?.tableView.reloadData()
                     self?.scrollToBottom()
@@ -258,10 +272,24 @@ class ChatController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        // Очищаем данные чата
+        self.chat_info = nil
+        self.chat = nil
+        
+        // Отключаем WebSocket
+        self.socket?.disconnect()
+        self.socket = nil
+    }
+    
     // MARK: - Message Handling
 
     // MARK: - Cleanup
     deinit {
         NotificationCenter.default.removeObserver(self)
+        self.socket?.disconnect()
+        self.socket = nil
     }
 }

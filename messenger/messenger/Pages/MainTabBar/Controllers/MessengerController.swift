@@ -46,7 +46,6 @@ class MessengerController: UIViewController, UITableViewDelegate, UITableViewDat
                 
             case .failure(let error):
                 print("Raw JSON response:", response.data.flatMap { String(data: $0, encoding: .utf8) } ?? "Empty response")
-                print("Error details:", error.localizedDescription)
                 AlertManager.pushPrimitiveAlert(to: self, title: "Ошибка", desc: "Не удалось получить список чатов.")
                 
             case .success(let decodedChats):
@@ -60,8 +59,12 @@ class MessengerController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let chat_id: String = self.chats[indexPath.row].id
+        print(chat_id)
         Router.shared.pushChat(from: self, chat_id: chat_id)
         
+    }
+    @IBAction func didTapOpenSearch(_ sender: Any) {
+        Router.shared.pushFriendsSearch(from: self)
     }
     
 }

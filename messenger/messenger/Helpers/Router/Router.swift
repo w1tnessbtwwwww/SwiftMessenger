@@ -34,4 +34,19 @@ final class Router {
         from.navigationController?.pushViewController(vc, animated: true)
     }
     
+    public func pushFriendsSearch(from: UIViewController) {
+        let vc = UIStoryboard(name: "UsersSearch", bundle: nil).instantiateViewController(withIdentifier: "UsersSearch") as! UsersSearchController
+        from.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    public func pushMyFriends(from: UIViewController) {
+        let vc = UIStoryboard(name: "MyFriends", bundle: nil).instantiateViewController(withIdentifier: "MyFriends") as! MyFriendsController
+        from.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    public func pushMyRequests(from: UIViewController) {
+        let vc = UIStoryboard(name: "MyRequests", bundle: nil).instantiateViewController(withIdentifier: "MyRequests") as! MyRequestsController
+        from.navigationController?.pushViewController(vc, animated: true)
+    }
+    
 }

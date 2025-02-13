@@ -9,7 +9,7 @@ import Foundation
 
 struct ChatElement: Codable {
     let id, chatName: String
-    let photo: String
+    let photo: String?
     let type: String
     let lastMessage: LastMessage?
 

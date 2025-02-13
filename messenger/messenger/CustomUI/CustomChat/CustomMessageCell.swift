@@ -1,13 +1,16 @@
 
 import Foundation
 import UIKit
-
+import Kingfisher
 class CustomMessageCell: UITableViewCell {
     @IBOutlet weak var Message: UILabel!
 
+    @IBOutlet weak var messageBorder: UIView!
+    @IBOutlet weak var miniIcon: UIImageView!
     override func awakeFromNib() {
         super.awakeFromNib()
         setupViews()
+        self.layer.cornerRadius = 10
     }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -18,7 +21,7 @@ class CustomMessageCell: UITableViewCell {
         super.init(coder: coder)
     }
 
-    public func setupCell(message: Message, _ myId: String) {
+    public func setupCell(message: Message, _ myId: String, photoUrl: String?) {
         self.Message.text = message.message
         if (message.senderId == myId) {
             Message.textAlignment = .right
@@ -26,9 +29,13 @@ class CustomMessageCell: UITableViewCell {
         else {
             Message.textAlignment = .left
         }
+        
+        self.miniIcon.kf.setImage(with: URL(string: photoUrl ?? ""))
+    
     }
 
     private func setupViews() {
+        self.messageBorder.layer.cornerRadius = 10
         Message.numberOfLines = 0
         Message.translatesAutoresizingMaskIntoConstraints = false
 

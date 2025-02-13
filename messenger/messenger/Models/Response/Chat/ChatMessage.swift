@@ -9,7 +9,7 @@ import Foundation
 
 struct ChatHistory: Codable {
     let id, chatName: String
-    let photo: String
+    let photo: String?
     var messages: [Message]
 
     enum CodingKeys: String, CodingKey {
