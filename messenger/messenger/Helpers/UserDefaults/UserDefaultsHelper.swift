@@ -2,7 +2,7 @@
 //  UserDefaultsHelper.swift
 //  messenger
 //
-//  Created by Алексей Суровцев on 21.01.2025.
+//  Created by Тофик Мамедов on 21.01.2025.
 //
 
 import Foundation

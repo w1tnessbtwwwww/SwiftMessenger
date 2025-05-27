@@ -2,7 +2,7 @@
 //  CustomFriendsCell.swift
 //  messenger
 //
-//  Created by Алексей Суровцев on 04.02.2025.
+//  Created by Тофик Мамедов on 04.02.2025.
 //
 
 import UIKit

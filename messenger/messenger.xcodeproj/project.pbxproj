@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B401A04C2D3E2E2E00F52F35 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = B401A04B2D3E2E2E00F52F35 /* Alamofire */; };
+		B43F0F182DE453A7003BB3B1 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = B43F0F172DE453A7003BB3B1 /* SnapKit */; };
 		B490D33E2D42AA4200247EE9 /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = B490D33D2D42AA4200247EE9 /* Starscream */; };
 		B4E53BDE2D3FC6A4006F32B9 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = B4E53BDD2D3FC6A4006F32B9 /* Kingfisher */; };
 /* End PBXBuildFile section */
@@ -43,6 +44,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B4E53BDE2D3FC6A4006F32B9 /* Kingfisher in Frameworks */,
+				B43F0F182DE453A7003BB3B1 /* SnapKit in Frameworks */,
 				B401A04C2D3E2E2E00F52F35 /* Alamofire in Frameworks */,
 				B490D33E2D42AA4200247EE9 /* Starscream in Frameworks */,
 			);
@@ -82,6 +84,7 @@
 				B401A04B2D3E2E2E00F52F35 /* Alamofire */,
 				B4E53BDD2D3FC6A4006F32B9 /* Kingfisher */,
 				B490D33D2D42AA4200247EE9 /* Starscream */,
+				B43F0F172DE453A7003BB3B1 /* SnapKit */,
 			);
 			productName = messenger;
 			productReference = B4E32E0A2D42144F00337EF8 /* messenger.app */;
@@ -115,6 +118,7 @@
 				B401A04A2D3E2E2E00F52F35 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				B4E53BDC2D3FC6A4006F32B9 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				B490D33C2D42AA4200247EE9 /* XCRemoteSwiftPackageReference "Starscream" */,
+				B43F0F162DE453A7003BB3B1 /* XCRemoteSwiftPackageReference "SnapKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B401A01D2D3E2B6C00F52F35;
@@ -356,6 +360,14 @@
 				minimumVersion = 5.10.2;
 			};
 		};
+		B43F0F162DE453A7003BB3B1 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
 		B490D33C2D42AA4200247EE9 /* XCRemoteSwiftPackageReference "Starscream" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/daltoniam/Starscream";
@@ -379,6 +391,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B401A04A2D3E2E2E00F52F35 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		B43F0F172DE453A7003BB3B1 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B43F0F162DE453A7003BB3B1 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
 		};
 		B490D33D2D42AA4200247EE9 /* Starscream */ = {
 			isa = XCSwiftPackageProductDependency;

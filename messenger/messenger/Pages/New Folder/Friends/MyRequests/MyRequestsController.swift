@@ -2,7 +2,7 @@
 //  MyRequestsController.swift
 //  messenger
 //
-//  Created by Алексей Суровцев on 05.02.2025.
+//  Created by Тофик Мамедов on 05.02.2025.
 //
 
 import Foundation

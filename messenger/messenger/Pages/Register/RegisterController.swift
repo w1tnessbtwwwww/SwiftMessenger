@@ -2,7 +2,7 @@
 //  Register.swift
 //  messenger
 //
-//  Created by Алексей Суровцев on 20.01.2025.
+//  Created by Тофик Мамедов on 20.01.2025.
 //
 
 import UIKit

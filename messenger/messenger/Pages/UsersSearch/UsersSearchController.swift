@@ -2,7 +2,7 @@
 //  UsersSearchController.swift
 //  messenger
 //
-//  Created by Алексей Суровцев on 04.02.2025.
+//  Created by Тофик Мамедов on 04.02.2025.
 //
 
 import Foundation
@@ -14,20 +14,28 @@ class UsersSearchController: UIViewController, UITableViewDelegate, UITableViewD
         
     ]
     
+    var selectedUsers: [String] = [
+        
+    ]
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         searchResult.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CustomSearchFriends", for: indexPath) as! CustomSearchCellController
-        cell.setupCell(searchResult[indexPath.row].username!, searchResult[indexPath.row].photo)
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let user = self.searchResult[indexPath.row]
+    @IBAction func didTapCreateChat(_ sender: Any) {
+        
         let myId = UserDefaultsHelper.shared.id
-        let request = CreateChat(users: ["\(myId!)", "\(user.id!)"], name: "\(user.name!)")
+        
+        let chatName = "Рандомчик 1"
+        
+        var chatType = "personal"
+        
+        if (self.selectedUsers.count > 1) {
+            chatType = "group"
+        }
+        
+        
+        let request = CreateChat(users: self.selectedUsers + [myId!], name: chatName, type: chatType)
         AF.request("\(APIService.baseUrl)/chats/create_chat", method: .post, parameters: request, encoder: JSONParameterEncoder.default, headers: APIService.getAuthorizationHeaders()).responseDecodable(of: CreateChatResponse.self) { response in
             switch (response.result) {
                 case .success(let chat):
@@ -40,6 +48,25 @@ class UsersSearchController: UIViewController, UITableViewDelegate, UITableViewD
                 break
             }
         }
+        
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CustomSearchFriends", for: indexPath) as! CustomSearchCellController
+        cell.setupCell(searchResult[indexPath.row].username!, searchResult[indexPath.row].photo)
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let user = self.searchResult[indexPath.row]
+        let cell = tableView.cellForRow(at: indexPath) as! CustomSearchCellController
+        cell.isSelectedToChat.isOn = !cell.isSelectedToChat.isOn
+        if cell.isSelectedToChat.isOn == true {
+            self.selectedUsers.append(user.id!)
+        } else {
+            self.selectedUsers.remove(at: self.selectedUsers.firstIndex(of: user.id!)!)
+        }
+        print(self.selectedUsers)
     }
     
     public func fetchUsers() {
@@ -60,6 +87,16 @@ class UsersSearchController: UIViewController, UITableViewDelegate, UITableViewD
     
     @IBAction func didEndEditSearchBar(_ sender: Any) {
         fetchUsers()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        // Очищаем данные чата
+        self.searchResult = []
+        self.resultsTable.reloadData()
+        
+        self.selectedUsers = []
     }
     
     @IBOutlet weak var searchBar: UITextField!

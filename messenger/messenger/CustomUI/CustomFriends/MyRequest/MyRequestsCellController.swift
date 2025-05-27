@@ -2,7 +2,7 @@
 //  MyRequestsCellController.swift
 //  messenger
 //
-//  Created by Алексей Суровцев on 05.02.2025.
+//  Created by Тофик Мамедов on 05.02.2025.
 //
 
 import Foundation
@@ -36,14 +36,23 @@ class MyRequestsCellController: UITableViewCell {
         }
     }
     
-    func rejectFriend(requestId: String) {
-        
+    func rejectFriend() {
+        AF.request("\(APIService.baseUrl)/friends/requests/\(self.requestId)/reject", method: .post, headers: APIService.getAuthorizationHeaders()).response { response in
+            
+            switch (response.result) {
+            case .success:
+                self.removeAction?()
+            case .failure(let error):
+                print(error)
+            }
+            
+        }
     }
     
     @IBAction func didTapAcceptButton(_ sender: Any) {
         acceptFriend()
     }
     @IBAction func didTapRejectButton(_ sender: Any) {
-        
+        rejectFriend()
     }
 }

@@ -2,7 +2,7 @@
 //  MessengerController.swift
 //  messenger
 //
-//  Created by Алексей Суровцев on 23.01.2025.
+//  Created by Тофик Мамедов on 23.01.2025.
 //
 
 import Foundation
