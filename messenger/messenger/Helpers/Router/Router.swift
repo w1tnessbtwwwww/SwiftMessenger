@@ -30,7 +30,7 @@ final class Router {
     
     public func pushChat(from: UIViewController, chat_id: String) {
         let vc = UIStoryboard(name: "Chat", bundle: nil).instantiateViewController(withIdentifier: "Chat") as! ChatController
-        vc.configureChat(chat_id: chat_id)
+        vc.configureChat(chatID: chat_id)
         from.navigationController?.pushViewController(vc, animated: true)
     }
     

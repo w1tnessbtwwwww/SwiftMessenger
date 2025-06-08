@@ -1,5 +1,3 @@
-
-import Foundation
 import UIKit
 import Kingfisher
 import SnapKit
@@ -18,7 +16,7 @@ class CustomMessageCell: UITableViewCell {
         let label = UILabel()
         label.numberOfLines = 0
         label.font = UIFont.systemFont(ofSize: 16)
-        label.textColor = .white
+        label.textColor = .black
         return label
     }()
     
@@ -33,90 +31,141 @@ class CustomMessageCell: UITableViewCell {
         return iv
     }()
     
+    private let messageImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.contentMode = .scaleAspectFill
+        iv.clipsToBounds = true
+        iv.backgroundColor = .clear
+        iv.isHidden = true
+        iv.layer.cornerRadius = 8
+        return iv
+    }()
+    
     // MARK: - Constraints
     private var leadingConstraint: Constraint?
     private var trailingConstraint: Constraint?
+    private var imageHeightConstraint: Constraint?
     
-    // MARK: - Init
+    // MARK: - Lifecycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
+        setupConstraints()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Setup
-    public func configure(user_id: String, message: String?, _ myId: String, photo_url: String?, fileUrl: String?) {
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        avatarImageView.image = nil
+        messageLabel.text = nil
+        messageImageView.image = nil
+        messageImageView.isHidden = true
+        imageHeightConstraint?.update(offset: 0)
+    }
+    
+    // MARK: - Configuration
+    func configure(user_id: String, message: String?, _ myId: String, photo_url: String?, fileUrl: String?) {
         messageLabel.text = message
         
         if user_id == myId {
-            // My message (right aligned)
-            bubbleView.backgroundColor = UIColor.systemBlue
-            messageLabel.textAlignment = .right
-            avatarImageView.isHidden = true
-            
-            // Activate trailing constraint
-            leadingConstraint?.deactivate()
-            trailingConstraint?.activate()
+            setupMyMessageStyle()
         } else {
-            // Other's message (left aligned with avatar)
-            bubbleView.backgroundColor = UIColor.systemGray3
-            messageLabel.textAlignment = .left
-            avatarImageView.isHidden = false
+            setupOtherMessageStyle(photo_url: photo_url)
+        }
+        
+        configureImage(fileUrl: fileUrl)
+    }
+    
+    private func setupMyMessageStyle() {
+        bubbleView.backgroundColor = .systemBlue
+        messageLabel.textColor = .white
+        messageLabel.textAlignment = .right
+        avatarImageView.isHidden = true
+        leadingConstraint?.deactivate()
+        trailingConstraint?.activate()
+    }
+    
+    private func setupOtherMessageStyle(photo_url: String?) {
+        bubbleView.backgroundColor = .systemGray3
+        messageLabel.textColor = .black
+        messageLabel.textAlignment = .left
+        avatarImageView.isHidden = false
+        trailingConstraint?.deactivate()
+        leadingConstraint?.activate()
+        
+        if let url = photo_url {
+            avatarImageView.kf.setImage(with: URL(string: url))
+        }
+    }
+    
+    private func configureImage(fileUrl: String?) {
+        guard let fileUrl = fileUrl, let url = URL(string: fileUrl) else {
+            messageImageView.isHidden = true
+            imageHeightConstraint?.update(offset: 0)
+            return
+        }
+        
+        messageImageView.isHidden = false
+        messageImageView.kf.setImage(with: url) { [weak self] result in
+            guard let self = self, case .success(let value) = result else { return }
             
-            // Activate leading constraint
-            trailingConstraint?.deactivate()
-            leadingConstraint?.activate()
+            let maxBubbleWidth = UIScreen.main.bounds.width * 0.75 - 24
+            let aspectRatio = value.image.size.width / value.image.size.height
+            let calculatedHeight = min(300, maxBubbleWidth / aspectRatio)
             
-            if let url = photo_url {
-                avatarImageView.kf.setImage(with: URL(string: url))
+            self.imageHeightConstraint?.update(offset: calculatedHeight)
+            self.layoutIfNeeded()
+            
+            if let tableView = self.superview as? UITableView {
+                tableView.beginUpdates()
+                tableView.endUpdates()
             }
         }
     }
     
+    // MARK: - Setup
     private func setupViews() {
         backgroundColor = .clear
         selectionStyle = .none
-        
-        addSubview(avatarImageView)
-        addSubview(bubbleView)
+        contentView.addSubview(avatarImageView)
+        contentView.addSubview(bubbleView)
+        bubbleView.addSubview(messageImageView)
         bubbleView.addSubview(messageLabel)
-        
-        // Avatar constraints
+    }
+    
+    private func setupConstraints() {
         avatarImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(8)
             make.bottom.equalToSuperview().offset(-8)
-            make.width.height.equalTo(32)
+            make.size.equalTo(CGSize(width: 32, height: 32))
         }
         
-        // Bubble constraints (base)
         bubbleView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(8)
             make.bottom.equalToSuperview().offset(-8).priority(.high)
             make.width.lessThanOrEqualToSuperview().multipliedBy(0.75)
         }
         
-        // Message label constraints
-        messageLabel.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12))
+        messageImageView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview().inset(12)
+            imageHeightConstraint = make.height.equalTo(0).constraint
         }
         
-        // Dynamic constraints setup
+        messageLabel.snp.makeConstraints { make in
+            make.top.equalTo(messageImageView.snp.bottom).offset(8)
+            make.leading.trailing.equalToSuperview().inset(12)
+            make.bottom.equalToSuperview().inset(12).priority(.high)
+        }
+        
         bubbleView.snp.prepareConstraints { make in
             leadingConstraint = make.leading.equalTo(avatarImageView.snp.trailing).offset(8).constraint
             trailingConstraint = make.trailing.equalToSuperview().offset(-8).constraint
         }
         
-        // Initially deactivate both
         leadingConstraint?.deactivate()
         trailingConstraint?.deactivate()
-    }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        avatarImageView.image = nil
-        messageLabel.text = nil
     }
 }
